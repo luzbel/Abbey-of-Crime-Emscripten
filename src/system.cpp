@@ -81,27 +81,34 @@ void System::init()
 	}
 
 	if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ){
-		print("ERROR: Mix_OpenAudio.\n");
+		print("ERROR: Mix_OpenAudio\n");
+		fprintf(stderr,"ERROR: Mix_OpenAudio %s.\n",SDL_GetError());
 	}
-	for (int i=0;i<TOTAL_SOUND_FILES;i++)
+	int nc=Mix_AllocateChannels(static_cast<UINT8>(Abadia::SONIDOS::Count));
+      	if (nc!=static_cast<UINT8>(Abadia::SONIDOS::Count)) {
+		fprintf(stderr,"solo %d canales\n",nc); fflush(stderr);
+	}
+
+	//for (size_t i=0;i<std::size(Abadia::SOUND_FILE_NAMES);i++) esto requiere std=c++17
+	for (auto i=0;i<static_cast<UINT8>(Abadia::SONIDOS::Count);i++)
 	{
-		sounds.push_back(Mix_LoadWAV(soundsPathList[i]));
+		fprintf(stderr,"loadwav %s\n", Abadia::SOUND_FILE_NAMES[i]); fflush(stderr);
+		sounds.push_back(Mix_LoadWAV(Abadia::SOUND_FILE_NAMES[i]));
 		if (sounds[i] == NULL){
 			print("Error: can't read sound file\n");			
 		}
 	}
 
-	for (int i=0;i<TOTAL_MUSIC_FILES;i++){
-		music.push_back(Mix_LoadWAV(musicPathList[i]));
-		if (music[i] == NULL){
-			print("Error: can't read music file.\n");			
-		}
-	}
-	
 	surface = SDL_CreateRGBSurface(0, TEXTURE_WIDTH,TEXTURE_HEIGHT,32, rmask, gmask,bmask, amask);
+
 	if (surface == NULL){		
-        print ("Error: Can't create surface.\n");
+	        print ("Error: Can't create surface.\n");
 	}
+
+	_pixels=static_cast<Uint32*>(surface->pixels);
+	_pitch_pixels = surface->pitch / sizeof(UINT32);
+
+//fprintf(stderr,"SDL_GetPixelFormatName %s\n",(char *)SDL_GetPixelFormatName(surface->format->format)); fflush(stderr);
 	texture = SDL_CreateTextureFromSurface(renderer, surface);	
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
@@ -128,12 +135,7 @@ void System::quit()
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);	
 
-	// music
-	for (int i=0;i<TOTAL_MUSIC_FILES;i++){
-        Mix_FreeChunk(music[i]);
-	}
-	music.clear();
-	for (int i=0;i<TOTAL_SOUND_FILES;i++){
+	for (size_t i=0;i<static_cast<int>(Abadia::SONIDOS::Count);i++) {
 		Mix_FreeChunk(sounds[i]);
 	}
 	sounds.clear(); 
@@ -157,17 +159,17 @@ void System::updateScreen()
 #endif
 }
 
-void System::playMusic(int i)
-{	
-    Mix_PlayChannel( -1, music[i], -1);
-}
-void System::stopMusic()
+void System::stopSound(Abadia::SONIDOS index)
 {
-    Mix_HaltChannel(-1);
+	auto i=static_cast<int>(index);
+	assert(i < static_cast<int>(Abadia::SONIDOS::Count));
+	Mix_HaltChannel(i);
 }
-void System::playSound(int i)
+void System::playSound(Abadia::SONIDOS index, bool loop)
 {
-	Mix_PlayChannel( -1, sounds[i], 0);
+	auto i=static_cast<int>(index);
+	assert(i < static_cast<int>(Abadia::SONIDOS::Count));
+	Mix_PlayChannel(i, sounds[i], loop);
 }
 void System::handleEvents()
 {

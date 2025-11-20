@@ -11,9 +11,8 @@ using namespace Abadia;
 // pergamino de la presentación
 /////////////////////////////////////////////////////////////////////////////
 
-
 // TODO poner cada texto en includes que se puedan modificar mejor
-//const char * Pergamino::pergaminoInicio[8] = 
+// TODO: ver si se puede e interesa marcar las cadenas con u8"Texto"
 const unsigned char * Pergamino::pergaminoInicio[8] =
 		{ // 0 Castellano
 	(const unsigned char*)
@@ -35,7 +34,7 @@ const unsigned char * Pergamino::pergaminoInicio[8] =
 	"terribles que me fue\x0d"
 	"dado presenciar en mi\x0d"
 	"juventud.\x0d\x0d"
-	" El sewor me conce-\x0d"
+	" El señor me conce-\x0d"
 	"de la gracia de dar\x0d"
 	"fiel testimonio de los\x0d"
 	"acontecimientos que se\x0d"
@@ -46,13 +45,13 @@ const unsigned char * Pergamino::pergaminoInicio[8] =
 	"manto de silencio; ha-\x0d"
 	"cia finales de 1327,\x0d"
 	"cuando mi padre deci-\x0d"
-	"dio que acompawara a\x0d"
+	"dio que acompañara a\x0d"
 	"fray Guillermo de \x0d"
 	"Occam, sabio francis-\x0d"
 	"cano que estaba a\x0d"
 	"punto de iniciar una\x0d"
 	"mision en el desem-\x0d"
-	"pewo de la cual to-\x0d"
+	"peño de la cual to-\x0d"
 	"caria muchas ciuda-\x0d"
 	"des famosas y aba-\x0d"
 	"dias antiquisimas. Asi\x0d"
@@ -686,7 +685,6 @@ const unsigned char * Pergamino::pergaminoInicio[8] =
 // pergamino del final del juego
 /////////////////////////////////////////////////////////////////////////////
 
-//const char * Pergamino::pergaminoFinal[8] = 
 const unsigned char * Pergamino::pergaminoFinal[8] = 
 	{
 		// texto 0 castellano
@@ -1669,7 +1667,7 @@ const unsigned char * Pergamino::pergaminoFinal[8] =
 /////////////////////////////////////////////////////////////////////////////
 // pergamino con las referencias mostradas en la ayuda
 /////////////////////////////////////////////////////////////////////////////
-// 666 777 TODO falta añadir las referencias de las versiones DC y MAC
+// TODO falta añadir las referencias de las versiones DC y MAC
 const unsigned char * Pergamino::pergaminoReferencias[8] = 
 	{
 		// texto 0 castellano
@@ -2067,5 +2065,3 @@ const unsigned char * Pergamino::pergaminoIntroduccion[8] =
 	,
 		// fin textos 7 portugues
 	};
-
-
