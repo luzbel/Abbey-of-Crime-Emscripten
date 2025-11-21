@@ -69,6 +69,24 @@ void System::init()
 	SDL_GetWindowSize(window, &w, &h);
 #else
 	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, windowFlags);
+	{
+		int window_w, window_h=0;
+		SDL_GetWindowSize(window, &window_w, &window_h);
+		float scale_x = (float)window_w / TEXTURE_WIDTH;
+		float scale_y = (float)window_h / TEXTURE_HEIGHT;
+
+		float scale = fminf(scale_x, scale_y); // Escala uniforme más grande que cabe
+
+		dstrect.w = (int)(TEXTURE_WIDTH * scale);
+		dstrect.h = (int)(TEXTURE_HEIGHT * scale);
+
+		dstrect.x = (window_w - dstrect.w) / 2;
+		dstrect.y = (window_h - dstrect.h) / 2;
+//	fprintf(stderr,"size  w %d h %d scale %f dw %d dh %d dx %d dy %d\n",
+//					window_w, window_h, scale, 
+//					dstrect.w , dstrect.h, dstrect.x , dstrect.y ); fflush(stderr);
+}
+
 #endif
 	
 	if (window == NULL){		
@@ -152,7 +170,15 @@ void System::updateScreen()
 	// Test this line with all the supported platforms. Fixes video problems with 
 	// the raspberry pi with KMSDRM
 	SDL_RenderClear(renderer);
+#ifdef ANDROID
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
+#else
+	// ponemos fondo negro para que si al escalar
+	// quedan bandas sin rellenar no queden en blanco
+	// que no casa con el fondo real del juego
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+#endif
 	SDL_RenderPresent(renderer);
 #ifdef __EMSCRIPTEN__
 	}
@@ -355,7 +381,30 @@ void System::handleEvents()
 				default:
 					break;
 			}
-		}		
+		}
+		//else if (event.type == SDL_WINDOWEVENT_SIZE_CHANGED)
+		else if (event.type ==  SDL_WINDOWEVENT && 
+				(event.window.event == SDL_WINDOWEVENT_RESIZED ||
+				event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+			)
+		{
+			int window_w, window_h=0;
+			SDL_GetWindowSize(window, &window_w, &window_h);
+			float scale_x = (float)window_w / TEXTURE_WIDTH;
+			float scale_y = (float)window_h / TEXTURE_HEIGHT;
+
+			float scale = fminf(scale_x, scale_y); // Escala uniforme más grande que cabe
+
+			dstrect.w = (int)(TEXTURE_WIDTH * scale);
+			dstrect.h = (int)(TEXTURE_HEIGHT * scale);
+
+			dstrect.x = (window_w - dstrect.w) / 2;
+			dstrect.y = (window_h - dstrect.h) / 2;
+
+//			fprintf(stderr,"size changed w %d h %d scale %f dw %d dh %d dx %d dy %d\n",
+//					window_w, window_h, scale, 
+//					dstrect.w , dstrect.h, dstrect.x , dstrect.y ); fflush(stderr);
+		}
 	}
 }
 

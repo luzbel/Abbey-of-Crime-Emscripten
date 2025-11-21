@@ -127,6 +127,7 @@ struct System
 #endif
 
 	SDL_Surface *surface;
+	SDL_Rect dstrect; // para mantener proporción al escalar
 	SDL_Renderer *renderer;
 	SDL_Texture *texture;
 	SDL_Window *window;
